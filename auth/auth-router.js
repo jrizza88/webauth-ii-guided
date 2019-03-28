@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
-
 const Users = require('../users/users-model.js');
+
+
 
 // for endpoints beginning with /api/auth
 router.post('/register', (req, res) => {
@@ -11,6 +12,7 @@ router.post('/register', (req, res) => {
 
   Users.add(user)
     .then(saved => {
+      req.session.user = user;
       res.status(201).json(saved);
     })
     .catch(error => {
@@ -19,14 +21,17 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
+  console.log(req.body)
   let { username, password } = req.body;
 
   Users.findBy({ username })
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
+        // req.session.username = user.username;
+        req.session.user = user;
         res.status(200).json({
-          message: `Welcome ${user.username}!`,
+          message: `Welcome ${user.username}!, have a cookie!`,
         });
       } else {
         res.status(401).json({ message: 'Invalid Credentials' });
