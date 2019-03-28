@@ -1,9 +1,13 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const db = require('../database/dbConfig');
 const session = require('express-session'); // 1. added this 
+const knexSessionStore = require('connect-session-knex')(session);
 const authRouter = require('../auth/auth-router.js');
 const usersRouter = require('../users/users-router.js');
+
+// knexSessionStore(session);
 
 const server = express();
 
@@ -22,7 +26,15 @@ const sessionConfig = {
   // do you create a new cookie everytime a session is saved?
   resave: false,
   saveUninitialized: false, // GDPR laws against setting cookies automatically
-}
+ 
+  store: new knexSessionStore({
+    knex: db,
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    createtable: true,
+    clearInterval: 1000 * 60 * 60,
+  })
+};
 
 server.use(helmet());
 server.use(express.json());

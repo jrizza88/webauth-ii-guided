@@ -3,8 +3,10 @@ const bcrypt = require('bcryptjs');
 const Users = require('../users/users-model.js');
 
 module.exports = (req, res, next) => {
+  console.log('in restricted')
+  console.log(req.session)
+  console.log('session name', req.session.username)
   // const { username, password } = req.headers;
-
   // if (req.session && req.sessions.username){
     if (req.session && req.sessions.username){
   // if (username && password) {
